@@ -28,7 +28,7 @@ def get_order_items(order_id):
     return response.json()
 
 
-def get_all_order_items(max_pages=None, delay=0.5, order_types=None, json_file=None):
+def get_all_order_items(max_pages=100, delay=0.5, order_types=None, json_file=None):
     """
     Retrieves order items across pages and returns a list of dictionaries
     with detailed information about each item.
@@ -86,6 +86,7 @@ def get_all_order_items(max_pages=None, delay=0.5, order_types=None, json_file=N
         current_page = 1
         total_pages = None
 
+        # In the get_all_order_items function
         while (total_pages is None or current_page <= total_pages) and (max_pages is None or current_page <= max_pages):
             # Define parameters for the current page
             params = {
@@ -108,6 +109,20 @@ def get_all_order_items(max_pages=None, delay=0.5, order_types=None, json_file=N
                 # Check if the request was successful
                 if response.status_code != 200:
                     print(f"Error on page {current_page} for {order_type} orders: Status code {response.status_code}")
+
+                    # Check for the specific invalid page number error
+                    if response.status_code == 400:
+                        try:
+                            error_data = response.json()
+                            if error_data.get("errors") and any(e.get("error_key") == "ERR_INVALID_PAGE_NUMBER" for e in
+                                                                error_data.get("errors", [])):
+                                print("Reached maximum allowed page number. Target API seems to have a 100-page limit.")
+                                print(f"Successfully processed pages 1-{current_page - 1}")
+                                break
+                        except:
+                            pass
+
+                    # For other errors, just break
                     break
 
                 # Parse the response
