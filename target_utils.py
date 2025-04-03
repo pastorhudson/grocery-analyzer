@@ -1,3 +1,4 @@
+import configparser
 from pprint import pprint
 import browser_cookie3
 import os
@@ -6,6 +7,47 @@ import time
 
 # Load cookies from your browser (Firefox in this example)
 cookies = browser_cookie3.firefox()
+
+
+def load_config(config_file='config.ini'):
+    """
+    Load configuration from a config.ini file
+
+    Args:
+        config_file (str): Path to the config file
+
+    Returns:
+        dict: Dictionary containing configuration values
+    """
+    config = configparser.ConfigParser()
+
+    # Check if config file exists
+    if not os.path.exists(config_file):
+        # Create a new config file with example structure
+        config['API'] = {
+            'x_api_key': 'YOUR_API_KEY_HERE'
+        }
+
+        with open(config_file, 'w') as f:
+            config.write(f)
+
+        print(f"Created new config file at {config_file}")
+        print("Please edit this file to add your API key")
+        return None
+
+    # Read the existing config file
+    config.read(config_file)
+
+    # Check if API section and x_api_key exist
+    if 'API' not in config or 'x_api_key' not in config['API']:
+        print(f"Config file is missing required sections. Please check {config_file}")
+        return None
+
+    # Return as a dictionary
+    return {
+        'x_api_key': config['API']['x_api_key']
+    }
+
 
 def get_order_items(order_id):
     headers = {

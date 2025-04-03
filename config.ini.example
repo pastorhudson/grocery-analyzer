@@ -1,0 +1,12 @@
+[API]
+x_api_key = YOUR_API_KEY_HERE
+
+[Browser]
+; Options: firefox, chrome, edge, safari, opera
+browser = firefox
+
+[Settings]
+max_pages = 100
+delay = 0.5
+; Comma-separated list of order types: STORE, ONLINE
+order_types = STORE,ONLINE
